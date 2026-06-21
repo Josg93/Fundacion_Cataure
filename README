@@ -41,4 +41,3 @@ fundacion_cataure/
 ├── templates/            # Plantillas HTML globales
 ├── manage.py
 └── requirements.txt      # Dependencias del proyecto
-
