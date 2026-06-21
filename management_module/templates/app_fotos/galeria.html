@@ -1,0 +1,111 @@
+{% extends 'app_fotos/base.html' %} {% block title %}Galería - Fototeca
+{%endblock %} {% block content %}
+<div class="layout-boceto">
+  <div class="fila-superior-boceto">
+    <div class="contenedor-boton-filtro">
+      <button id="toggle-filtros" class="btn btn-filtro">Filtrar</button>
+    </div>
+
+    <div class="contenedor-buscador">
+      <form class="search-bar-boceto" method="get">
+        <input
+          type="text"
+          name="q"
+          placeholder="Buscador"
+          value="{{ query }}"
+        />
+        <button class="btn">Buscar</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="cuerpo-galeria-boceto">
+    <aside id="panel-filtros" class="panel-filtros-lateral oculto">
+      <h2>Filtros</h2>
+      <form method="get" class="filtros-form">
+        <div class="filtro">
+          <label>Colección:</label>
+          <select name="coleccion">
+            <option value="">Todas</option>
+            {% for col in colecciones %}
+            <option
+              value="{{ col.nombre }}"
+              {%
+              if
+              request.GET.coleccion=""
+              ="col.nombre"
+              %}selected{%
+              endif
+              %}
+            >
+              {{ col.nombre }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filtro">
+          <label>Lugar:</label>
+          <input type="text" name="lugar" value="{{ request.GET.lugar }}" />
+        </div>
+
+        <div class="filtro">
+          <label>Fecha:</label>
+          <input type="text" name="fecha" value="{{ request.GET.fecha }}" />
+        </div>
+
+        <button type="submit" class="btn btn-secundario">
+          Aplicar filtros
+        </button>
+        {% if request.GET %}
+        <a href="{% url 'galeria' %}" class="btn btn-link">Limpiar</a>
+        {% endif %}
+      </form>
+    </aside>
+
+    <section class="seccion-fotos-boceto">
+      <div class="galeria-boceto">
+        {% for foto in fotos %}
+        <div class="card-boceto">
+          <div class="info-superior-boceto">
+            <p class="metadatos-boceto">Metadatos</p>
+            <p class="nombres-boceto">Nombres</p>
+            <p class="descripcion-boceto">Descripción</p>
+          </div>
+          <img
+            src="{{ foto.imagen.url }}"
+            alt="{{ foto.titulo }}"
+            onclick="abrirLightbox('{{ foto.imagen.url }}', '{{ foto.titulo }}', '{{ foto.fecha}}', '{{foto.codigo}}', '{{foto.autor}}', '{{foto.personas}}', '{{foto.lugar_orig}}', '{{foto.tema}}', '{{foto.coleccion}}', '{{foto.creado_en}}')"
+            class="miniatura-boceto"
+          />
+          <div class="marcadores-boceto">
+            <span>11</span>
+            <span>11</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <div id="lightbox" class="lightbox">
+    <div id="lightbox-container" class="lightbox-container">
+      <span class="cerrar" onclick="cerrarLightbox()">&times;</span>
+      <div class="lightbox-contenido">
+        <img id="lightbox-imagen" />
+      </div>
+      <div class="lightbox-texto">
+        <h2 id="lightbox-titulo"></h2>
+        <p id="lightbox-codigo"></p>
+        <p id="lightbox-fecha"></p>
+        <p id="lightbox-autor"></p>
+        <p id="lightbox-personas"></p>
+        <p id="lightbox-lugar_orig"></p>
+        <p id="lightbox-tema"></p>
+        <p id="lightbox-coleccion"></p>
+        <p id="lightbox-creado_en"></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

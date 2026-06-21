@@ -1,0 +1,16 @@
+# Entorno y credenciales
+.env
+
+# Python (Archivos compilados)
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Archivos multimedia subidos por usuarios
+media/
+
+# Carpetas de IDEs (Opcional, por si usas VS Code o PyCharm)
+.vscode/
+.idea/

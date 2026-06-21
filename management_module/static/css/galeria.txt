@@ -1,0 +1,60 @@
+.galeria{
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+  gap: 1rem;
+  width: 100%;
+}
+
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+  margin: 1rem 0;
+  padding: 1rem;
+}
+
+img {
+  max-width: 100%;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.search-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem auto;
+}
+
+.search-bar {
+    display: flex;
+    gap: 0.5rem; /* espacio entre input y botón */
+    max-width: 500px;
+  }
+
+  .search-bar input {
+    flex: 1; /* ocupa el espacio restante */
+    margin: 0;
+    background-color: #EAEAEA;
+    border: 1px solid #5A7E8F;
+  }
+
+  .search-bar button {
+    white-space: nowrap; /* evita que el texto del botón se parta */
+  }
+
+
+
+.miniatura {
+  width: 200px;
+  max-height: 100px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.miniatura:hover {
+  transform: scale(1.05);
+}
+

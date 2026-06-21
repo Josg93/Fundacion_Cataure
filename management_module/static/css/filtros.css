@@ -1,0 +1,59 @@
+.filtros-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filtro {
+    display: flex;
+    flex-direction: column;
+}
+
+.filtro label {
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.filtro input, .filtro select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn-link {
+    background: none;
+    color: #666;
+    text-decoration: underline;
+    border: none;
+    padding: 0;
+}
+
+.panel-filtros {
+    display: none;
+    opacity: 0;
+    background-color: #f0f0f0;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    transform:  translateY(20px);
+
+    transition: opacity 0.3s ease;
+  }
+  
+  .panel-filtros.visible {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .btn-filtro {
+    background-color: #5A7E8F;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    
+    white-space: nowrap;
+  }
+  
