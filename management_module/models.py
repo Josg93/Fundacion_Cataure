@@ -99,6 +99,7 @@ class Lugares(models.Model):
 # =====================================================================
 
 class Fotografias(models.Model):
+    foto = models.ImageField(upload_to='fotos_patrimonio/', blank=True, null=True)
     signatura = models.TextField(primary_key=True)
     titulo = models.TextField()
     descripcion = models.TextField(blank=True, null=True)

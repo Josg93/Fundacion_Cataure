@@ -4,6 +4,7 @@ from .models import (
     FotografiasPersonas, Localidades, Lugares, Materias, 
     Municipios, Personas
 )
+from django.utils.html import format_html
 
 # =====================================================================
 # 1. CONFIGURACIÓN DE TABLAS INTERMEDIAS (INLINES)
@@ -28,22 +29,27 @@ class FotografiasPersonasInline(admin.TabularInline):
 # 2. CONFIGURACIÓN DEL MODELO PRINCIPAL (FOTOGRAFÍAS)
 # =====================================================================
 
+
+
+
+
 @admin.register(Fotografias)
-class FotografiasAdmin(admin.ModelAdmin):
-    # Columnas que aparecerán en la lista principal de fotos
-    list_display = ('signatura', 'titulo', 'autor', 'anio', 'coleccion', 'lugar')
+class FotografiaAdmin(admin.ModelAdmin):
+    # 1. Agrega 'foto' (o el método 'ver_miniatura') a la lista de columnas visibles
+    list_display = ('signatura', 'ver_miniatura', 'titulo', 'autor', 'anio') 
     
-    # Filtros laterales rápidos para la segmentación del catálogo
-    list_filter = ('anio', 'coleccion', 'autor', 'lugar__localidad__municipio')
+    # 2. Agrega campos por los que puedas buscar o filtrar si lo deseas
+    search_fields = ('signatura', 'titulo', 'autor')
+    list_filter = ('autor',)
+
+    # 3. Método personalizado para renderizar la miniatura de la foto de forma segura en el panel
+    def ver_miniatura(self, obj):
+        if obj.foto:
+            return format_html('<img src="{}" style="width: 50px; height: auto; border-radius: 4px;" />', obj.foto.url)
+        return "Sin foto"
     
-    # Buscador de texto completo (busca en la firma, título, descripción y nombres relacionados)
-    search_fields = ('signatura', 'titulo', 'descripcion', 'autor__nombre')
-    
-    # Orden predeterminado (por año descendente, las fotos más recientes primero)
-    ordering = ('-anio',)
-    
-    # Inyección de los formularios intermedios (Materias y Personas)
-    inlines = [FotografiasMateriasInline, FotografiasPersonasInline]
+    # Cambia el encabezado de la columna en el admin de Django
+    ver_miniatura.short_description = 'Miniatura'
 
 
 # =====================================================================
