@@ -1,0 +1,44 @@
+# Fundación Cataure - Sistema de Archivo Digital y Fonoteca
+
+Este proyecto consiste en una plataforma web robusta diseñada para la organización, catalogación, preservación y difusión digital de los activos históricos, musicales y bienes culturales multimedia de la **Fundación Cataure** en Mérida, Venezuela.
+
+El sistema permite centralizar archivos de audio, documentos y material visual, garantizando su indexación eficiente y su accesibilidad mediante una interfaz intuitiva y una arquitectura de datos optimizada.
+
+---
+
+## 🚀 Características Principales
+
+* **Gestión Multimedia Completa:** Almacenamiento, reproducción y descarga de archivos de audio (fonoteca) y documentos históricos.
+* **Catalogación Avanzada:** Sistema de metadatos personalizado para la indexación precisa de bienes culturales.
+* **Búsqueda Eficiente:** Filtros avanzados para la localización rápida de activos por categoría, fecha, autor y palabras clave.
+* **Panel de Administración:** Interfaz interna intuitiva para la carga masiva de archivos, control de versiones y gestión de usuarios.
+* **Seguridad y Roles:** Control de acceso basado en roles para proteger la integridad del patrimonio digital.
+
+---
+
+## 🛠️ Stack Tecnológico
+
+* **Backend:** Python 3.11+ / Django (Model-View-Template / REST Framework)
+* **Base de Datos:** PostgreSQL (Producción) / SQLite (Entorno de desarrollo rápido)
+* **Frontend:** HTML5, CSS3, JavaScript (integrado nativamente con el motor de plantillas de Django)
+* **Estilos:** [Especificar si usas Bootstrap, Tailwind o CSS Puro]
+
+---
+
+## 📦 Arquitectura del Proyecto
+
+El proyecto sigue el patrón arquitectónico estándar de Django (**MVT**), estructurado por aplicaciones modulares para facilitar la escalabilidad:
+
+```text
+fundacion_cataure/
+├── cataure_project/      # Configuración global del proyecto
+├── apps/
+│   ├── archive/          # Lógica de catalogación, documentos y metadatos
+│   ├── fonoteca/         # Gestión de archivos de audio y reproductores
+│   └── users/            # Control de autenticación y permisos de usuarios
+├── static/               # Archivos estáticos (CSS, JS, Imágenes)
+├── media/                # Almacenamiento local de archivos multimedia (Ignorado en Git)
+├── templates/            # Plantillas HTML globales
+├── manage.py
+└── requirements.txt      # Dependencias del proyecto
+
