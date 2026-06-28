@@ -1,61 +1,61 @@
 import os
 from django.core.management.base import BaseCommand
 from django.core.files import File
-from management_module.models import Fotografias  # Asegúrate de usar el nombre correcto de tu app
+from django.db.models import Q
+# Reemplaza 'tu_app' por el nombre de tu aplicación y 'Fotografia' por tu modelo real
+from management_module.models import Fotografias 
 
 class Command(BaseCommand):
-    help = 'Vincula las imágenes de la carpeta temporal con los registros de la base de datos usando la signatura'
+    help = 'Vincula las imágenes del disco con los registros de la base de datos usando la signatura'
 
     def handle(self, *args, **options):
-        # Ruta donde tienes guardadas tus imágenes actualmente
-        ruta_imagenes = '/home/laptop/Escritorio/Desarrollo de software y portafolio/Proyecto Fundación Cataure/Fototeca/media/images'
+        # Tu ruta exacta proporcionada
+        ruta_origen = '/home/laptop/Escritorio/Desarrollo de software y portafolio/Proyecto Fundación Cataure/Fototeca/media/images'
         
-        if not os.path.exists(ruta_imagenes):
-            self.stdout.write(self.style.ERROR(f"La ruta especificada no existe: {ruta_imagenes}"))
-            return
-
-        # Listar todos los archivos en esa carpeta
-        archivos_en_carpeta = os.listdir(ruta_imagenes)
+        # Extensiones de imagen soportadas
+        extensiones = ['.jpg', '.jpeg', '.png', '.JPG', '.PNG']
         
-        # Mapear los archivos eliminando la extensión para comparar con la signatura
-        # Ejemplo: {"abc123xyz": "abc123xyz.jpg"}
-        mapa_imagenes = {}
-        for archivo in archivos_en_carpeta:
-            nombre_sin_extension, _ = os.path.splitext(archivo)
-            mapa_imagenes[nombre_sin_extension] = archivo
-
-        # Obtener los registros que aún no tienen foto asignada
-        registros_pendientes = Fotografias.objects.filter(foto__isnull=True) | Fotografias.objects.filter(foto='')
+        # 1. Buscamos registros donde el campo 'foto' esté vacío o nulo
+        registros_pendientes = Fotografias.objects.filter(Q(foto__isnull=True) | Q(foto__exact='') | Q(foto=[]))
         
-        total_registros = registros_pendientes.count()
-        self.stdout.write(self.style.SUCCESS(f"Se encontraron {total_registros} registros sin imagen asociada."))
-
-        vinculados = 0
-        no_encontrados = 0
+        self.stdout.write(self.style.SUCCESS(f"Se encontraron {registros_pendientes.count()} registros pendientes por vincular."))
+        
+        exitos = 0
+        errores = 0
 
         for registro in registros_pendientes:
-            # Limpiamos espacios en blanco por si acaso en la signatura de la BD
-            signatura = str(registro.signatura).strip() if registro.signatura else None
+            # Usamos el campo 'signatura' como nombre del archivo (asumiendo que se llama 'signatura')
+            nombre_base_archivo = str(registro.signatura).strip()
+            archivo_encontrado = None
+            ext_encontrada = ""
 
-            if signatura in mapa_imagenes:
-                nombre_archivo_real = mapa_imagenes[signatura]
-                ruta_completa_archivo = os.path.join(ruta_imagenes, name=nombre_archivo_real)
-
-                # Abrimos el archivo físico en modo lectura binaria
-                with open(ruta_completa_archivo, 'rb') as f:
-                    django_file = File(f)
-                    # El método .save() guarda físicamente el archivo en MEDIA_ROOT/fundacion_fotos/
-                    # y actualiza automáticamente la ruta en la base de datos PostgreSQL
-                    registro.foto.save(nombre_archivo_real, django_file, save=True)
+            # Probamos con las diferentes extensiones en la carpeta
+            for ext in extensiones:
+                nombre_completo = f"{nombre_base_archivo}{ext}"
+                ruta_completa_imagen = os.path.join(ruta_origen, nombre_completo)
                 
-                vinculados += 1
-                self.stdout.write(self.style.SUCCESS(f"✔ Vinculado: Registro {registro.id} con {nombre_archivo_real}"))
+                if os.path.exists(ruta_completa_imagen):
+                    archivo_encontrado = ruta_completa_imagen
+                    ext_encontrada = ext
+                    break
+            
+            if archivo_encontrado:
+                try:
+                    # 2. Abrimos el archivo físicamente
+                    with open(archivo_encontrado, 'rb') as f:
+                        archivo_django = File(f)
+                        # 3. La magia de Django: guarda el archivo en el destino final 
+                        # configurado en tu modelo y actualiza la base de datos de Postgres.
+                        nombre_guardado = f"{nombre_base_archivo}{ext_encontrada}"
+                        registro.foto.save(nombre_guardado, archivo_django, save=True)
+                        
+                    self.stdout.write(self.style.SUCCESS(f"✔ Vinculado: {nombre_base_archivo}"))
+                    exitos += 1
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(f"❌ Error al guardar {nombre_base_archivo}: {str(e)}"))
+                    errores += 1
             else:
-                no_encontrados += 1
-                self.stdout.write(self.style.WARNING(f"⚠ No se encontró archivo para la signatura: '{signatura}'"))
+                self.stdout.write(self.style.WARNING(f"⚠ Archivo no encontrado para la signatura: {nombre_base_archivo}"))
+                errores += 1
 
-        self.stdout.write(self.style.SUCCESS(
-            f"\n--- Proceso Finalizado ---\n"
-            f"Imágenes vinculadas exitosamente: {vinculados}\n"
-            f"Registros cuyas imágenes no se encontraron en la carpeta: {no_encontrados}"
-        ))
+        self.stdout.write(self.style.SUCCESS(f"\nProceso terminado. Éxitos: {exitos} | No vinculados: {errores}"))

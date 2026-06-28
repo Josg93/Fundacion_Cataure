@@ -1,93 +1,134 @@
-{% extends 'app_fotos/base.html' %}
-{% load static %}
-
-{% block title %}Inicio - Fototeca Patrimonial{% endblock %}
-
-{% block content %}
-
-
-<section class="hero-section">
-  <div class="slider-container">
-    <div class="slider">
-      <div class="slides">
-        <div class="slide active">
-          <img src="{% static 'img/slider1.jpg' %}" alt="Imagen histórica 1">
-        </div>
-        <div class="slide">
-          <img src="{% static 'img/slider2.jpg' %}" alt="Imagen histórica 2">
-        </div>
-        <div class="slide">
-          <img src="{% static 'img/slider3.jpg' %}" alt="Imagen histórica 3">
-        </div>
-      </div>
-      <button class="slider-prev">‹</button>
-      <button class="slider-next">›</button>
-      <div class="slider-dots">
-        <button class="dot active" data-index="0"></button>
-        <button class="dot" data-index="1"></button>
-        <button class="dot" data-index="2"></button>
-      </div>
-    </div>
+{% extends 'app_fotos/base.html' %} {% load static %} {% block title %}Inicio —
+Fundación Cataure{% endblock %} {% block content %}
+<!-- Hero Slider -->
+<section class="hero" id="heroSlider">
+  <div class="hero-slide active">
+    <img src="{% static 'img/slider1.jpg' %}" alt="Patrimonio histórico" />
   </div>
-</section>
-
-<!-- SECCIÓN DE PRESENTACIÓN -->
-<section class="presentation-section">
-  <div class="presentation-container">
-    <div class="presentation-text">
-      <h2>Rescatando Nuestra Historia</h2>
-      <p>
-        La Fototeca Patrimonial es un esfuerzo por preservar, digitalizar y compartir el legado visual de nuestra región.
-        Este repositorio público está orientado tanto a investigadores como al ciudadano común, promoviendo el acceso libre
-        y el respeto por nuestras raíces culturales.
-      </p>
-      <a href="{% url 'galeria' %}" class="primary-button">Acceder a la Fototeca</a>
-    </div>
-    <div class="presentation-image">
-      <img src="{% static 'img/muestra.jpg' %}" alt="Galería Patrimonial">
-    </div>
+  <div class="hero-slide">
+    <img src="{% static 'img/slider2.jpg' %}" alt="Arquitectura patrimonial" />
   </div>
-</section>
-
-<!-- SECCIÓN DE VALORES -->
-<section class="values-section">
-  <div class="values-container">
-    <h2>Nuestros Valores</h2>
-    <div class="values-grid">
-      <div class="value-card">
-        <div class="value-icon">
-          <i class="fas fa-universal-access"></i>
-        </div>
-        <h3>Accesibilidad</h3>
-        <p>Plataforma intuitiva y abierta a todo público.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-icon">
-          <i class="fas fa-archive"></i>
-        </div>
-        <h3>Preservación</h3>
-        <p>Digitalización de contenido para resguardo patrimonial.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-icon">
-          <i class="fas fa-landmark"></i>
-        </div>
-        <h3>Identidad</h3>
-        <p>Fomento del sentido de pertenencia histórica y cultural.</p>
-      </div>
-    </div>
+  <div class="hero-slide">
+    <img src="{% static 'img/slider3.jpg' %}" alt="Memoria visual" />
   </div>
-</section>
-
-<!-- SECCIÓN DE LLAMADO A LA ACCIÓN -->
-<section class="cta-section">
-  <div class="cta-container">
-    <h2>¡Apoya Nuestro Proyecto!</h2>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Memoria e identidad a través de la fotografía</h1>
     <p>
-      Tu contribución nos ayuda a seguir digitalizando y preservando nuestro patrimonio fotográfico.
+      Explora, descubre y preserva el patrimonio histórico de nuestra comunidad
+      en un archivo fotográfico digital único.
     </p>
-    <a href="{% url 'galeria' %}" class="cta-button">Colaborar</a>
+    <div class="hero-cta">
+      <a href="{% url 'galeria' %}" class="btn btn-primary">Explorar galería</a>
+    </div>
+  </div>
+  <div class="hero-dots">
+    <button
+      class="hero-dot active"
+      data-slide="0"
+      aria-label="Slide 1"
+    ></button>
+    <button class="hero-dot" data-slide="1" aria-label="Slide 2"></button>
+    <button class="hero-dot" data-slide="2" aria-label="Slide 3"></button>
   </div>
 </section>
 
+<!-- Explorar sección -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Explorar el archivo</h2>
+    <p class="section-subtitle">
+      Sumérgete en las colecciones que conforman nuestra memoria colectiva
+    </p>
+    <div class="explore-grid">
+      <a href="{% url 'galeria' %}" class="explore-card">
+        <div class="explore-card-img">
+          <img
+            src="{% static 'img/muestra.jpg' %}"
+            alt="Fotografías históricas"
+          />
+        </div>
+        <div class="explore-card-body">
+          <h3>Fotografías</h3>
+          <p>Miles de imágenes que narran nuestra historia</p>
+        </div>
+      </a>
+      <a href="{% url 'galeria' %}?coleccion=1" class="explore-card">
+        <div class="explore-card-img">
+          <img src="{% static 'img/muestra.jpg' %}" alt="Colecciones" />
+        </div>
+        <div class="explore-card-body">
+          <h3>Colecciones</h3>
+          <p>Fondos documentales organizados temáticamente</p>
+        </div>
+      </a>
+      <a href="{% url 'galeria' %}" class="explore-card">
+        <div class="explore-card-img">
+          <img src="{% static 'img/muestra.jpg' %}" alt="Lugares" />
+        </div>
+        <div class="explore-card-body">
+          <h3>Lugares</h3>
+          <p>Recorridos visuales por municipios y localidades</p>
+        </div>
+      </a>
+      <a href="{% url 'galeria' %}" class="explore-card">
+        <div class="explore-card-img">
+          <img src="{% static 'img/muestra.jpg' %}" alt="Personajes" />
+        </div>
+        <div class="explore-card-body">
+          <h3>Personajes</h3>
+          <p>Rostros que construyeron nuestra identidad</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Valores -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">Nuestra misión</h2>
+    <p class="section-subtitle">
+      Tres pilares fundamentales guían nuestro trabajo de preservación
+      patrimonial
+    </p>
+    <div class="values-grid">
+      <div class="value-item fade-in">
+        <div class="value-icon">&#x1F4F7;</div>
+        <h3>Preservación</h3>
+        <p>
+          Digitalizamos y conservamos el patrimonio fotográfico para las futuras
+          generaciones, garantizando su acceso y perdurabilidad en el tiempo.
+        </p>
+      </div>
+      <div class="value-item fade-in">
+        <div class="value-icon">&#x1F50D;</div>
+        <h3>Investigación</h3>
+        <p>
+          Facilitamos herramientas de búsqueda avanzada para investigadores,
+          historiadores y público general interesado en la historia local.
+        </p>
+      </div>
+      <div class="value-item fade-in">
+        <div class="value-icon">&#x1F30D;</div>
+        <h3>Difusión</h3>
+        <p>
+          Compartimos el acervo cultural con la comunidad a través de una
+          plataforma accesible, promoviendo el conocimiento de nuestro
+          patrimonio.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Comienza a explorar</h2>
+  <p>
+    Accede a nuestro archivo fotográfico y descubre la historia visual de
+    nuestra comunidad.
+  </p>
+  <a href="{% url 'galeria' %}" class="btn btn-primary">Ir a la galería</a>
+</section>
 {% endblock %}

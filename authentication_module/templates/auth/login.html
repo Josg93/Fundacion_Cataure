@@ -1,0 +1,19 @@
+{% extends 'app_fotos/base.html' %}
+{% load static %}
+{% block title %}Iniciar sesión — Fototeca Patrimonial{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <h2>Bienvenido</h2>
+    <p class="auth-subtitle">Inicia sesión para acceder al archivo</p>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Ingresar</button>
+    </form>
+    <p class="auth-footer">
+      ¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

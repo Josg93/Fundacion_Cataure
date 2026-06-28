@@ -14,3 +14,8 @@ media/
 # Carpetas de IDEs (Opcional, por si usas VS Code o PyCharm)
 .vscode/
 .idea/
+.opencode/
+DOCS/
+
+*.json
+.AGENTS.md 

@@ -1,110 +1,157 @@
-{% extends 'app_fotos/base.html' %} {% block title %}Galería - Fototeca
-{%endblock %} {% block content %}
-<div class="layout-boceto">
-  <div class="fila-superior-boceto">
-    <div class="contenedor-boton-filtro">
-      <button id="toggle-filtros" class="btn btn-filtro">Filtrar</button>
-    </div>
+{% extends 'app_fotos/base.html' %}
+{% load static %}
+{% block title %}Galería — Fototeca Patrimonial{% endblock %}
 
-    <div class="contenedor-buscador">
-      <form class="search-bar-boceto" method="get">
-        <input
-          type="text"
-          name="q"
-          placeholder="Buscador"
-          value="{{ query }}"
-        />
-        <button class="btn">Buscar</button>
-      </form>
-    </div>
-  </div>
+{% block content %}
+<div class="container">
+  <div class="gallery-layout">
+    <nav class="breadcrumb">
+      <a href="{% url 'inicio' %}">Inicio</a> / <span>Galería</span>
+    </nav>
 
-  <div class="cuerpo-galeria-boceto">
-    <aside id="panel-filtros" class="panel-filtros-lateral oculto">
-      <h2>Filtros</h2>
-      <form method="get" class="filtros-form">
-        <div class="filtro">
-          <label>Colección:</label>
-          <select name="coleccion">
+    <!-- Filtros sidebar -->
+    <aside class="filters-sidebar" id="filtersSidebar">
+      <h3>Filtros</h3>
+      <form method="GET" action="{% url 'galeria' %}">
+        <div class="filter-group">
+          <label for="q">Buscar</label>
+          <input type="text" name="q" id="q" placeholder="Título, autor, año..." value="{{ request.GET.q }}">
+        </div>
+        <div class="filter-group">
+          <label for="coleccion">Colección</label>
+          <select name="coleccion" id="coleccion">
             <option value="">Todas</option>
-            {% for col in colecciones %}
-            <option
-              value="{{ col.nombre }}"
-              {%
-              if
-              request.GET.coleccion=""
-              ="col.nombre"
-              %}selected{%
-              endif
-              %}
-            >
-              {{ col.nombre }}
+            {% for coleccion in colecciones %}
+            <option value="{{ coleccion.id }}" {% if request.GET.coleccion|stringformat:"s" == coleccion.id|stringformat:"s" %}selected{% endif %}>
+              {{ coleccion.nombre }}
             </option>
             {% endfor %}
           </select>
         </div>
-
-        <div class="filtro">
-          <label>Lugar:</label>
-          <input type="text" name="lugar" value="{{ request.GET.lugar }}" />
+        <div class="filter-group">
+          <label for="lugar">Lugar</label>
+          <input type="text" name="lugar" id="lugar" placeholder="Municipio o localidad" value="{{ request.GET.lugar }}">
         </div>
-
-        <div class="filtro">
-          <label>Fecha:</label>
-          <input type="text" name="fecha" value="{{ request.GET.fecha }}" />
+        <div class="filter-actions">
+          <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+          <a href="{% url 'galeria' %}" class="btn btn-outline-dark">Limpiar</a>
         </div>
-
-        <button type="submit" class="btn btn-secundario">
-          Aplicar filtros
-        </button>
-        {% if request.GET %}
-        <a href="{% url 'galeria' %}" class="btn btn-link">Limpiar</a>
-        {% endif %}
       </form>
     </aside>
 
-    <section class="seccion-fotos-boceto">
-      <div class="galeria-boceto">
+    <!-- Grid de fotos -->
+    <div>
+      <button class="btn btn-outline-dark btn-sm filter-toggle" id="filterToggle">
+        Filtros
+      </button>
+
+      <form method="GET" action="{% url 'galeria' %}" class="search-bar">
+        <input type="text" name="q" placeholder="Buscar por título, autor, año..." value="{{ request.GET.q }}" aria-label="Buscar fotografías">
+        <button type="submit">Buscar</button>
+      </form>
+
+      {% if fotos %}
+      <div class="gallery-grid" id="galleryGrid">
         {% for foto in fotos %}
-        <div class="card-boceto">
-          <div class="info-superior-boceto">
-            <p class="metadatos-boceto">Metadatos</p>
-            <p class="nombres-boceto">Nombres</p>
-            <p class="descripcion-boceto">Descripción</p>
+        <div class="gallery-card" data-signatura="{{ foto.signatura }}"
+             data-titulo="{{ foto.titulo|default:'Sin título' }}"
+             data-descripcion="{{ foto.descripcion|default:'' }}"
+             data-autor="{{ foto.autor.nombre|default:'' }}"
+             data-autor-fondo="{{ foto.autor_fondo.nombre|default:'' }}"
+             data-anio="{{ foto.anio|default:'' }}"
+             data-coleccion="{{ foto.coleccion.nombre|default:'' }}"
+             data-lugar="{{ foto.lugar.nombre|default:'' }}"
+             data-foto-url="{{ foto.foto.url }}">
+          <div class="gallery-card-img">
+            <img src="{{ foto.foto.url }}" alt="{{ foto.titulo|default:'Fotografía' }}" loading="lazy">
+            <div class="gallery-card-overlay">
+              <span>Ver detalle</span>
+            </div>
           </div>
-          <img
-            src="{{ foto.imagen.url }}"
-            alt="{{ foto.titulo }}"
-            onclick="abrirLightbox('{{ foto.imagen.url }}', '{{ foto.titulo }}', '{{ foto.fecha}}', '{{foto.codigo}}', '{{foto.autor}}', '{{foto.personas}}', '{{foto.lugar_orig}}', '{{foto.tema}}', '{{foto.coleccion}}', '{{foto.creado_en}}')"
-            class="miniatura-boceto"
-          />
-          <div class="marcadores-boceto">
-            <span>11</span>
-            <span>11</span>
+          <div class="gallery-card-body">
+            <h4>{{ foto.titulo|default:'Sin título'|truncatechars:40 }}</h4>
+            {% if foto.descripcion %}
+            <p>{{ foto.descripcion|truncatechars:80 }}</p>
+            {% endif %}
+            <div class="gallery-card-meta">
+              {% if foto.anio %}<span>{{ foto.anio }}</span>{% endif %}
+              {% if foto.autor %}<span>{{ foto.autor.nombre }}</span>{% endif %}
+              {% if foto.coleccion %}<span>{{ foto.coleccion.nombre|truncatechars:20 }}</span>{% endif %}
+            </div>
           </div>
         </div>
         {% endfor %}
       </div>
-    </section>
-  </div>
 
-  <div id="lightbox" class="lightbox">
-    <div id="lightbox-container" class="lightbox-container">
-      <span class="cerrar" onclick="cerrarLightbox()">&times;</span>
-      <div class="lightbox-contenido">
-        <img id="lightbox-imagen" />
+      <!-- Paginación -->
+      {% if fotos.paginator.num_pages > 1 %}
+      <div class="pagination">
+        {% if fotos.has_previous %}
+        <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">&laquo;</a>
+        <a href="?page={{ fotos.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">&lsaquo;</a>
+        {% endif %}
+
+        {% for num in fotos.paginator.page_range %}
+          {% if num == fotos.number %}
+          <span class="current">{{ num }}</span>
+          {% elif num > fotos.number|add:'-3' and num < fotos.number|add:'3' %}
+          <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if fotos.has_next %}
+        <a href="?page={{ fotos.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">&rsaquo;</a>
+        <a href="?page={{ fotos.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">&raquo;</a>
+        {% endif %}
       </div>
-      <div class="lightbox-texto">
-        <h2 id="lightbox-titulo"></h2>
-        <p id="lightbox-codigo"></p>
-        <p id="lightbox-fecha"></p>
-        <p id="lightbox-autor"></p>
-        <p id="lightbox-personas"></p>
-        <p id="lightbox-lugar_orig"></p>
-        <p id="lightbox-tema"></p>
-        <p id="lightbox-coleccion"></p>
-        <p id="lightbox-creado_en"></p>
+      {% endif %}
+
+      {% else %}
+      <div class="empty-state">
+        <h3>No se encontraron resultados</h3>
+        <p>Intenta con otros términos de búsqueda o limpia los filtros.</p>
       </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">&times;</button>
+  <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Anterior">&lsaquo;</button>
+  <button class="lightbox-nav next" id="lightboxNext" aria-label="Siguiente">&rsaquo;</button>
+  <div class="lightbox-content">
+    <div class="lightbox-image">
+      <img id="lightboxImg" src="" alt="">
+    </div>
+    <div class="lightbox-meta">
+      <h2 id="lightboxTitulo"></h2>
+      <div class="meta-row">
+        <span class="meta-label">Signatura</span>
+        <span class="meta-value" id="lightboxSignatura"></span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Autor</span>
+        <span class="meta-value" id="lightboxAutor"></span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Fondo</span>
+        <span class="meta-value" id="lightboxFondo"></span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Año</span>
+        <span class="meta-value" id="lightboxAnio"></span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Colección</span>
+        <span class="meta-value" id="lightboxColeccion"></span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Lugar</span>
+        <span class="meta-value" id="lightboxLugar"></span>
+      </div>
+      <div class="description" id="lightboxDescripcion"></div>
     </div>
   </div>
 </div>
