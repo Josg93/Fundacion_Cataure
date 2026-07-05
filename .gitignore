@@ -9,13 +9,11 @@ __pycache__/
 venv/
 
 # Archivos multimedia subidos por usuarios
-media/
+media/fotos_patrimonio/
 
 # Carpetas de IDEs (Opcional, por si usas VS Code o PyCharm)
 .vscode/
 .idea/
-.opencode/
-DOCS/
 
 *.json
 .AGENTS.md 

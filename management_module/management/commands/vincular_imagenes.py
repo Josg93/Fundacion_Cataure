@@ -1,22 +1,21 @@
 import os
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.files import File
 from django.db.models import Q
-# Reemplaza 'tu_app' por el nombre de tu aplicación y 'Fotografia' por tu modelo real
-from management_module.models import Fotografias 
+from management_module.models import Fotografias
 
 class Command(BaseCommand):
     help = 'Vincula las imágenes del disco con los registros de la base de datos usando la signatura'
 
     def handle(self, *args, **options):
-        # Tu ruta exacta proporcionada
-        ruta_origen = '/home/laptop/Escritorio/Desarrollo de software y portafolio/Proyecto Fundación Cataure/Fototeca/media/images'
+        ruta_origen = os.path.join(settings.MEDIA_ROOT, 'images')
         
         # Extensiones de imagen soportadas
         extensiones = ['.jpg', '.jpeg', '.png', '.JPG', '.PNG']
         
         # 1. Buscamos registros donde el campo 'foto' esté vacío o nulo
-        registros_pendientes = Fotografias.objects.filter(Q(foto__isnull=True) | Q(foto__exact='') | Q(foto=[]))
+        registros_pendientes = Fotografias.objects.filter(Q(foto__isnull=True) | Q(foto__exact=''))
         
         self.stdout.write(self.style.SUCCESS(f"Se encontraron {registros_pendientes.count()} registros pendientes por vincular."))
         

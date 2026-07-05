@@ -1,5 +1,6 @@
 {% extends 'app_fotos/base.html' %}
 {% load static %}
+{% load gallery_tags %}
 {% block title %}Galería — Fototeca Patrimonial{% endblock %}
 
 {% block content %}
@@ -61,9 +62,11 @@
              data-anio="{{ foto.anio|default:'' }}"
              data-coleccion="{{ foto.coleccion.nombre|default:'' }}"
              data-lugar="{{ foto.lugar.nombre|default:'' }}"
-             data-foto-url="{{ foto.foto.url }}">
+             data-foto-url="{% if foto.foto %}{{ foto.foto.url }}{% endif %}">
           <div class="gallery-card-img">
+            {% if foto.foto %}
             <img src="{{ foto.foto.url }}" alt="{{ foto.titulo|default:'Fotografía' }}" loading="lazy">
+            {% endif %}
             <div class="gallery-card-overlay">
               <span>Ver detalle</span>
             </div>
@@ -83,25 +86,22 @@
         {% endfor %}
       </div>
 
-      <!-- Paginación -->
       {% if fotos.paginator.num_pages > 1 %}
       <div class="pagination">
         {% if fotos.has_previous %}
-        <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">&laquo;</a>
-        <a href="?page={{ fotos.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">&lsaquo;</a>
+        <a href="{% mantener_params page=1 %}">&laquo;</a>
+        <a href="{% mantener_params page=fotos.previous_page_number %}">&lsaquo;</a>
         {% endif %}
-
         {% for num in fotos.paginator.page_range %}
           {% if num == fotos.number %}
           <span class="current">{{ num }}</span>
           {% elif num > fotos.number|add:'-3' and num < fotos.number|add:'3' %}
-          <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">{{ num }}</a>
+          <a href="{% mantener_params page=num %}">{{ num }}</a>
           {% endif %}
         {% endfor %}
-
         {% if fotos.has_next %}
-        <a href="?page={{ fotos.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">&rsaquo;</a>
-        <a href="?page={{ fotos.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.lugar %}&lugar={{ request.GET.lugar }}{% endif %}{% if request.GET.coleccion %}&coleccion={{ request.GET.coleccion }}{% endif %}">&raquo;</a>
+        <a href="{% mantener_params page=fotos.next_page_number %}">&rsaquo;</a>
+        <a href="{% mantener_params page=fotos.paginator.num_pages %}">&raquo;</a>
         {% endif %}
       </div>
       {% endif %}

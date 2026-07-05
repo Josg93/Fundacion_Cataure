@@ -19,5 +19,10 @@ repositorio.]
 - Una tarea a la vez; al terminar, dime qué cambiaste para que lo
 revise.
 - Si no estás seguro al 80%, pregunta. No inventes.
+## Skills instaladas
+- Antes de iniciar cualquier tarea, revisa las skills disponibles en `.opencode/skills/` y carga explícitamente la que corresponda usando `skill("<nombre>")`.
+- Skills disponibles: `django-expert` (backend Django), `frontend-design` (diseño visual), `customize-opencode` (configuración de opencode), `find-skills` (descubrir nuevas skills).
+- Si la tarea involucra diseño frontend, carga `frontend-design` y sigue su flujo de trabajo (planificar → revisar → construir).
+- Si la tarea involucra modelos, vistas o APIs Django, carga `django-expert`.
 ## Documentación
 - Referencias a más reglas, contexto, documentación y especificaciones.

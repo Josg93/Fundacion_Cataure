@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
-from django.db.models import Q, TextField, Value, Prefetch
+from django.db.models import Q, TextField, Value, Prefetch, Exists, OuterRef
 from django.db.models.functions import Cast, Coalesce, Greatest
 from django.contrib.postgres.search import TrigramSimilarity
-from management_module.models import Fotografias, Materias, Personas, Colecciones
+from management_module.models import Fotografias, Materias, Personas, Colecciones, FotografiasMaterias, FotografiasPersonas
 
 def inicio(request):
     return render(request, "app_fotos/inicio.html")
@@ -21,6 +21,15 @@ def galeria(request):
     )
 
     if query and len(query) >= 3:
+        materias_exist = FotografiasMaterias.objects.filter(
+            fotografia_signatura=OuterRef('signatura'),
+            materia__nombre__trigram_similar=query,
+        )
+        personas_exist = FotografiasPersonas.objects.filter(
+            fotografia_signatura=OuterRef('signatura'),
+            persona__nombre__trigram_similar=query,
+        )
+
         texto_vacio_sql = Cast(Value(''), TextField())
         fotos_qs = fotos_qs.annotate(
             sim_titulo=TrigramSimilarity(Coalesce('titulo', texto_vacio_sql), query),
@@ -31,21 +40,18 @@ def galeria(request):
             sim_autor=TrigramSimilarity(Coalesce('autor__nombre', texto_vacio_sql), query),
             sim_coleccion=TrigramSimilarity(Coalesce('coleccion__nombre', texto_vacio_sql), query),
             sim_lugar=TrigramSimilarity(Coalesce('lugar__nombre', texto_vacio_sql), query),
-            sim_materias=TrigramSimilarity(Coalesce('materias__nombre', texto_vacio_sql), query),
-            sim_personas=TrigramSimilarity(Coalesce('personas__nombre', texto_vacio_sql), query),
         ).annotate(
             max_similitud=Greatest(
                 'sim_titulo', 'sim_signatura', 'sim_descripcion', 'sim_anio',
                 'sim_autor_fondo', 'sim_autor', 'sim_coleccion', 'sim_lugar',
-                'sim_materias', 'sim_personas'
             )
         ).filter(
             Q(sim_titulo__gt=0.1) | Q(sim_signatura__gt=0.1) |
             Q(sim_descripcion__gt=0.1) | Q(sim_anio__gt=0.1) |
             Q(sim_autor_fondo__gt=0.1) | Q(sim_autor__gt=0.1) |
             Q(sim_coleccion__gt=0.1) | Q(sim_lugar__gt=0.1) |
-            Q(sim_materias__gt=0.1) | Q(sim_personas__gt=0.1)
-        ).order_by('-max_similitud').distinct()
+            Q(Exists(materias_exist)) | Q(Exists(personas_exist))
+        ).order_by('-max_similitud')
     elif not request.GET:
         fotos_qs = fotos_qs.order_by('?')
 
